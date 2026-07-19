@@ -20,6 +20,8 @@ done
 echo
 echo "Authentication Complete. Launching Cloud Script Target..."
 echo
+
+# Downloads the main lab script with correct URL spacing (%20)
 curl -LO "https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/DR.M.AKSHITH.sh"
 chmod +x DR.M.AKSHITH.sh
 ./DR.M.AKSHITH.sh
