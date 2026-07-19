@@ -26,7 +26,7 @@ TOTAL_PHASES=11
 START_TIME=$(date +%s)
 
 gradient_line() {
-  echo -e "${BLUE}1010${LBLUE}1010${CYAN}1010${GREEN}1010${YELLOW}1010${MAGENTA}1010${RED}1010${NC}$(printf '━%.0s' {1..77})"
+  echo -e "${BLUE}━━━━${LBLUE}━━━━${CYAN}━━━━${GREEN}━━━━${YELLOW}━━━━${MAGENTA}━━━━${RED}━━━━${NC}$(printf '━%.0s' {1..47})"
 }
 
 print_phase() {
@@ -55,15 +55,16 @@ elapsed_since_start() {
 
 # ----------------------------- Welcome Banner --------------------------
 clear
-echo -e "${CYAN_TEXT}10101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010${NC}"
-echo -e "${GREEN_TEXT}  010101   010101        01       01   01   010101   01   01  0101010  0101010  01   01  0101010  ${NC}"
-echo -e "${GREEN_TEXT}  01   01  01   01       0101     01  01   01    01  01   01     01       01    01   01  01   01  ${NC}"
-echo -e "${YELLOW_TEXT}  01   01  010101  0101  01 01    01010    01        0101010     01       01    0101010  01   01  ${NC}"
-echo -e "${YELLOW_TEXT}  01   01  01  01        010101   01  01   01    01  01   01     01       01    01   01  01   01  ${NC}"
-echo -e "${RED_TEXT}  010101   01   01       01   01  01   01   010101   01   01  0101010     01    01   01  01   01  ${NC}"
-echo -e "${CYAN_TEXT}10101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010${NC}"
+echo -e "${CYAN_TEXT}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN_TEXT}  _____   ____      __  __           _  Format _   _   _   _     ${NC}"
+echo -e "${GREEN_TEXT}  |  __ \ |  _ \    |  \/  |         | |  | |  | | | | | | | |    ${NC}"
+echo -e "${YELLOW_TEXT}  | |  | || |_) |   | \  / |         | |__| |  | | | |_| | | |    ${NC}"
+echo -e "${YELLOW_TEXT}  | |  | ||  _ <    | |\/| |  _____  |  __  |  | | |  _  | | |    ${NC}"
+echo -e "${RED_TEXT}  | |__| || | \ \   | |  | | |_____| | |  | |  | | | | | | |_|    ${NC}"
+echo -e "${RED_TEXT}  |_____/ |_|  \_\  |_|  |_|         |_|  |_|  |_| |_| |_| (_)    ${NC}"
+echo -e "${CYAN_TEXT}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo
-echo -e "${WHITE_TEXT}────────────── Step-by-Step Managed Terraform Lab Automation ──────────────${RESET_FORMAT}"
+echo -e "${WHITE_TEXT}────────── Step-by-Step Managed Terraform Lab Automation ──────────${RESET_FORMAT}"
 echo -e "${MAGENTA_TEXT}${BOLD}⚡ AUTHOR: DR. M. AKSHITH ⚡${RESET_FORMAT}"
 echo
 
