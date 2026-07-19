@@ -1,14 +1,14 @@
 ## Manage Terraform State (GSP752)
 
 ### ⚠️ Disclaimer
-- **This script and guide are provided for educational purposes to help you understand lab services and boost your career. Before using the script, please open and review it to familiarize yourself with Google Cloud services. Ensure that you follow Qwiklabs' terms of service. The goal is to enhance your learning experience, not to bypass it.**
+- **This script and guide are provided for educational purposes to help you understand cloud services and boost your DevOps career. Before running the automation, please open and review the codebase to familiarize yourself with Google Cloud tools. Ensure that you follow Google Cloud Skills Boost / Qwiklabs terms of service. The structural goal is to enhance your automated learning experience, not to bypass it.**
 
 ### © Credit
-- **All rights and credits for the original content belong to Google Cloud [Google Cloud Skills Boost Website](https://cloudskillsboost.google)** 🙏
+- **If you are the original content creator and wish to submit a credit modification or a removal request, please open an issue in this repository. No copyright infringement is intended. All rights and core foundational structure belong to Google Cloud [Google Cloud Skills Boost](https://cloudskillsboost.google)** 🙏
 
 ### Run the following Commands in Cloud Shell
 ```bash
-export REGION=
+export REGION=us-central1
 ```
 
 ```bash
