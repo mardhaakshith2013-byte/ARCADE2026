@@ -1,7 +1,7 @@
 #!/bin/bash
 # =====================================================================
-#  Automating Infrastructure on Google Cloud with Terraform
-#  Managed and Optimized by DR. M. AKSHITH
+#  Build Infrastructure with Terraform on Google Cloud: Challenge Lab
+#  Fully Automated & Optimized by DR. M. AKSHITH
 #  Lab ID: GSP345
 # =====================================================================
 
@@ -63,18 +63,18 @@ echo -e "${MAGENTA}██████╔╝██║  ██║    ██║ ╚
 echo -e "${BLUE}╚═════╝ ╚═╝  ╚═╝    ╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═╝  ╚═╝${NC}"
 echo
 echo -e "${CYAN_TEXT}${BOLD}🌈 ⚡ DR.M.AKSHITH × CLOUD 🌈 ⚡${RESET_FORMAT}"
-echo -e "${BLUE_TEXT}${BOLD}🚀 Lab ID Focus: GSP345 — Automating Infrastructure with Terraform 🚀${RESET_FORMAT}"
+echo -e "${BLUE_TEXT}${BOLD}🚀 Lab ID Focus: GSP345 — Challenge Lab Suite 🚀${RESET_FORMAT}"
 echo
 
-# ----------------------------- Phase 1: Context Detection -------------------------
-print_phase "1" "🌍  Detecting Variables & Project Environment"
+# ----------------------------- Phase 1: Auto-Context Detection -------------------------
+print_phase "1" "🌍  Autodetecting Project Infrastructure Context"
 
 export PROJECT_ID=$DEVSHELL_PROJECT_ID
 if [ -z "$PROJECT_ID" ]; then
   export PROJECT_ID=$(gcloud config get-value project)
 fi
 
-# Detect Region and Zone dynamically
+# Dynamically parse current active Zone & Region configurations
 DETECTED_ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items.google-compute-default-zone)")
 if [ -z "$DETECTED_ZONE" ] || [ "$DETECTED_ZONE" == "null" ]; then
   DETECTED_ZONE=$(gcloud compute instances list --limit=1 --format="value(zone)")
@@ -84,29 +84,29 @@ if [ -z "$DETECTED_ZONE" ] || [ "$DETECTED_ZONE" == "null" ]; then
 else
   export ZONE="$DETECTED_ZONE"
 fi
-export REGION=${ZONE%-*}
+export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
 
-# Identify pre-existing instances dynamically
+# Auto-discover infrastructure tracking targets matching lab specifications
+export BUCKET="tf-bucket-$PROJECT_ID"
+export INSTANCE="tf-instance-3"
+export VPC="tf-vpc"
+
+# Extract existing unmanaged instances
 instances_output=$(gcloud compute instances list --format="value(id)")
 IFS=$'\n' read -r -d '' instance_id_1 instance_id_2 <<< "$instances_output"
 export INSTANCE_ID_1=$instance_id_1
 export INSTANCE_ID_2=$instance_id_2
 
-# Auto-fetch lab target requirements
-export BUCKET="tf-bucket-$PROJECT_ID"
-export INSTANCE="tf-instance-3"
-export VPC="tf-vpc"
+gcloud config set compute/zone "$ZONE" &>/dev/null
+gcloud config set compute/region "$REGION" &>/dev/null
 
-gcloud config set compute/zone "$ZONE"
-gcloud config set compute/region "$REGION"
-
-success "Project ID:   ${WHITE}$PROJECT_ID${NC}"
-success "Zone:         ${WHITE}$ZONE${NC}"
-success "Region:       ${WHITE}$REGION${NC}"
-success "Bucket Name:  ${WHITE}$BUCKET${NC}"
-success "VPC Name:     ${WHITE}$VPC${NC}"
-success "Instance 1:   ${WHITE}$INSTANCE_ID_1${NC}"
-success "Instance 2:   ${WHITE}$INSTANCE_ID_2${NC}"
+success "Target Project:  ${WHITE}$PROJECT_ID${NC}"
+success "Target Region:   ${WHITE}$REGION${NC}"
+success "Target Zone:     ${WHITE}$ZONE${NC}"
+success "Target Bucket:   ${WHITE}$BUCKET${NC}"
+success "Target VPC:      ${WHITE}$VPC${NC}"
+success "Instance ID 1:   ${WHITE}$INSTANCE_ID_1${NC}"
+success "Instance ID 2:   ${WHITE}$INSTANCE_ID_2${NC}"
 
 # ----------------------------- Phase 2: Setup Workspace -------------------------
 print_phase "2" "📁  Initializing Module Directory Structure"
@@ -151,7 +151,7 @@ resource "google_compute_instance" "tf-instance-1" {
   name         = "tf-instance-1"
   machine_type = "n1-standard-1"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -161,7 +161,7 @@ resource "google_compute_instance" "tf-instance-2" {
   name         = "tf-instance-2"
   machine_type = "n1-standard-1"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -187,22 +187,10 @@ resource "google_storage_bucket" "storage-bucket" {
 }
 EOF
 
-cat > main.tf <<EOF
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "4.53.0"
-    }
-  }
+cat >> main.tf <<EOF
+module "storage" {
+  source     = "./modules/storage"
 }
-provider "google" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-}
-module "instances" { source = "./modules/instances" }
-module "storage"   { source = "./modules/storage" }
 EOF
 
 terraform init
@@ -245,7 +233,7 @@ resource "google_compute_instance" "tf-instance-1" {
   name         = "tf-instance-1"
   machine_type = "e2-standard-2"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -255,7 +243,7 @@ resource "google_compute_instance" "tf-instance-2" {
   name         = "tf-instance-2"
   machine_type = "e2-standard-2"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -265,7 +253,7 @@ resource "google_compute_instance" "$INSTANCE" {
   name         = "$INSTANCE"
   machine_type = "e2-standard-2"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -276,16 +264,17 @@ terraform init
 terraform apply --auto-approve
 
 terraform taint module.instances.google_compute_instance."$INSTANCE"
+terraform init
 terraform plan
 terraform apply --auto-approve
 
-# Revert instance additions according to lab design guidelines
+# Clean up temporary verification resources to match target configurations
 cat > modules/instances/instances.tf <<EOF
 resource "google_compute_instance" "tf-instance-1" {
   name         = "tf-instance-1"
   machine_type = "e2-standard-2"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -295,7 +284,7 @@ resource "google_compute_instance" "tf-instance-2" {
   name         = "tf-instance-2"
   machine_type = "e2-standard-2"
   zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
   network_interface { network = "default" }
   metadata_startup_script = "#!/bin/bash"
   allow_stopping_for_update = true
@@ -308,27 +297,7 @@ success "Topology scaled and node cycle verification complete (⏱  $(elapsed_si
 # ----------------------------- Phase 7: Custom Module Networking -----------------
 print_phase "7" "🌐  Deploying Modular VPC & Security Enforcements"
 
-cat > main.tf <<EOF
-terraform {
-  backend "gcs" {
-    bucket  = "$BUCKET"
-    prefix  = "terraform/state"
-  }
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "4.53.0"
-    }
-  }
-}
-provider "google" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-}
-module "instances" { source = "./modules/instances" }
-module "storage"   { source = "./modules/storage" }
-
+cat >> main.tf <<EOF
 module "vpc" {
     source  = "terraform-google-modules/network/google"
     version = "~> 6.0.0"
@@ -351,7 +320,45 @@ module "vpc" {
         },
     ]
 }
+EOF
 
+terraform init
+terraform plan
+terraform apply --auto-approve
+
+cat > modules/instances/instances.tf <<EOF
+resource "google_compute_instance" "tf-instance-1" {
+  name         = "tf-instance-1"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
+  network_interface {
+    network    = "$VPC"
+    subnetwork = "subnet-01"
+  }
+  metadata_startup_script = "#!/bin/bash"
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "tf-instance-2" {
+  name         = "tf-instance-2"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+  boot_disk { initialize_params { image = "debian-cloud/debian-11" } }
+  network_interface {
+    network    = "$VPC"
+    subnetwork = "subnet-02"
+  }
+  metadata_startup_script = "#!/bin/bash"
+  allow_stopping_for_update = true
+}
+EOF
+
+terraform init
+terraform plan
+terraform apply --auto-approve
+
+cat >> main.tf <<EOF
 resource "google_compute_firewall" "tf-firewall"{
   name    = "tf-firewall"
   network = "projects/$PROJECT_ID/global/networks/$VPC"
@@ -365,35 +372,7 @@ resource "google_compute_firewall" "tf-firewall"{
 EOF
 
 terraform init
-
-cat > modules/instances/instances.tf <<EOF
-resource "google_compute_instance" "tf-instance-1" {
-  name         = "tf-instance-1"
-  machine_type = "e2-standard-2"
-  zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
-  network_interface {
-    network    = "$VPC"
-    subnetwork = "subnet-01"
-  }
-  metadata_startup_script = "#!/bin/bash"
-  allow_stopping_for_update = true
-}
-
-resource "google_compute_instance" "tf-instance-2" {
-  name         = "tf-instance-2"
-  machine_type = "e2-standard-2"
-  zone         = "$ZONE"
-  boot_disk { initialize_params { image = "debian-cloud/debian-12" } }
-  network_interface {
-    network    = "$VPC"
-    subnetwork = "subnet-02"
-  }
-  metadata_startup_script = "#!/bin/bash"
-  allow_stopping_for_update = true
-}
-EOF
-
+terraform plan
 terraform apply --auto-approve
 success "Advanced Network Topologies and Firewall Rules active (⏱  $(elapsed_since_start)s elapsed)"
 
@@ -401,7 +380,7 @@ success "Advanced Network Topologies and Firewall Rules active (⏱  $(elapsed_s
 TOTAL_TIME=$(elapsed_since_start)
 echo
 gradient_line
-echo -e "${GREEN_TEXT}   🎉  LAB COMPLETE SUCCESSFULY! (⏱  Total: ${TOTAL_TIME}s)  🎉${RESET_FORMAT}"
+echo -e "${GREEN_TEXT}   🎉  LAB COMPLETED SUCCESSFULLY! (⏱  Total: ${TOTAL_TIME}s)  🎉${RESET_FORMAT}"
 gradient_line
 echo
 echo -e "${RED_TEXT}   🎥  SUBSCRIBE ON YOUTUBE:${RESET_FORMAT}"
