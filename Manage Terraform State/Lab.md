@@ -43,15 +43,6 @@
 
 </div>
 
-> [!WARNING]
-> 📚 **Educational Use Only!** This script helps you **learn** GCP — not skip it. Read through it before running. Always follow **Qwiklabs ToS**.
-
-<br/>
-
-*
-<div align="center">
-
-## ⚡ `QUICK RUN` ⚡
 
 </div>
 
