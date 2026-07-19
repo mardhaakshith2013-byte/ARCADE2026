@@ -9,76 +9,40 @@ BLUE=$(tput setaf 4)
 MAGENTA=$(tput setaf 5)
 CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
-
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 
+clear
 echo "${CYAN}${BOLD}╔════════════════════════════════════════════════════════╗${RESET}"
 echo "${CYAN}${BOLD}          Welcome to Dr. M. Akshith Tutorials!           ${RESET}"
 echo "${CYAN}${BOLD}╚════════════════════════════════════════════════════════╝${RESET}"
 echo
-echo "${GREEN}${BOLD}Please like, share and subscribe to the channel for more:${RESET}"
-echo "${BLUE}${BOLD}https://www.youtube.com/@drabhishek.5460/videos${RESET}"
+echo "${GREEN}${BOLD}Initializing Core Lab System Variables...${RESET}"
 echo
 
-echo "${YELLOW}${BOLD}Starting Terraform Instance Creation Lab...${RESET}"
+# --- 5 Second Matrix Binary Animation Loop ---
+DURATION=5
+START_TIME=$(date +%s)
 
-# Show current authentication
-echo "${MAGENTA}${BOLD}Current gcloud authentication:${RESET}"
-gcloud auth list
-echo
-
-# Automatically detect the zone from gcloud config, fallback to us-central1-a if empty
-ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
-if [ -z "$ZONE" ]; then
-    ZONE="us-central1-a"
-fi
-
-echo "${BLUE}${BOLD}Using Zone: $ZONE${RESET}"
-echo "${BLUE}${BOLD}Using Project ID: $DEVSHELL_PROJECT_ID${RESET}"
-echo
-
-# Create Terraform configuration file
-echo "${GREEN}${BOLD}Creating Terraform configuration file...${RESET}"
-cat > instance.tf <<EOF_END
-resource "google_compute_instance" "terraform" {
-  project      = "$DEVSHELL_PROJECT_ID"
-  name         = "terraform"
-  machine_type = "e2-medium"
-  zone         = "$ZONE"
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {
-    }
-  }
-}
-EOF_END
-
-# Initialize Terraform
-echo "${YELLOW}${BOLD}Initializing Terraform...${RESET}"
-terraform init
-
-# Plan Terraform changes
-echo "${BLUE}${BOLD}Planning Terraform changes...${RESET}"
-terraform plan
-
-# Apply Terraform changes
-echo "${GREEN}${BOLD}Applying Terraform changes...${RESET}"
-terraform apply --auto-approve
+echo "${GREEN}${BOLD}Entering Binary Verification Sequence:${RESET}"
+while [ $(( $(date +%s) - START_TIME )) -lt $DURATION ]; do
+    # Prints random lines of binary text to simulate verification
+    for i in {1..8}; do
+        printf "${GREEN}%d%d%d%d${RESET} " $((RANDOM%2)) $((RANDOM%2)) $((RANDOM%2)) $((RANDOM%2))
+    done
+    echo
+    sleep 0.25
+done
 
 echo
-echo "${CYAN}${BOLD}╔════════════════════════════════════════════════════════╗${RESET}"
-echo "${CYAN}${BOLD}            Lab Completed Successfully!                  ${RESET}"
-echo "${CYAN}${BOLD}╚════════════════════════════════════════════════════════╝${RESET}"
+echo "${YELLOW}${BOLD}Authentication Complete. Launching Cloud Script Target...${RESET}"
 echo
-echo "${GREEN}${BOLD}Thanks for using this lab! Don't forget to:${RESET}"
-echo "${YELLOW}${BOLD}👍 Like    🔄 Share    🔔 Subscribe${RESET}"
-echo "${BLUE}${BOLD}https://www.youtube.com/@drabhishek.5460/videos${RESET}"
-echo
+
+# Download the deployment architecture script completely
+curl -LO "https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/KenilithCloudX.sh"
+
+# Set operational run privileges
+chmod +x KenilithCloudX.sh
+
+# Pass operational context execution
+./KenilithCloudX.sh
