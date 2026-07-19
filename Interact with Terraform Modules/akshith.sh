@@ -29,6 +29,7 @@ echo "${BG_BLUE}${BOLD}=========================================================
 echo "${BG_BLUE}${BOLD}                         INITIATING EXECUTION...                        ${RESET}"
 echo "${BG_BLUE}${BOLD}               Welcome to Dr. Akshith's Automated Cloud Lab              ${RESET}"
 echo "${BG_BLUE}${BOLD}                       GSP752: Manage Terraform State                   ${RESET}"
+echo "${BG_BLUE}${BOLD}               Repository: mardhaakshith2013-byte/ARCADE2026            ${RESET}"
 echo "${BG_BLUE}${BOLD}========================================================================${RESET}"
 echo
 
