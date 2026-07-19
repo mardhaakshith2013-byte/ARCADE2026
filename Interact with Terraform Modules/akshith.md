@@ -12,9 +12,10 @@ export REGION=us-central1
 ```
 
 ```bash
-curl -s -o akshith.sh "https://githubusercontent.com"
-chmod +x akshith.sh
-./akshith.sh
+curl -LO https://githubusercontent.com
+sudo chmod +x gsp751.sh
+./gsp751.sh
+
 ```
 
 ### Congratulations !!!!
