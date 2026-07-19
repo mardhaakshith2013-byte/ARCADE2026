@@ -74,4 +74,4 @@ GitHub
 
 ```bash
 curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh)" && sudo chmod +x akshith.sh && ./akshith.sh
-</div>
+
