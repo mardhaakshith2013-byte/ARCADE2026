@@ -1,4 +1,4 @@
-cat << 'EOF' > gsp751.sh
+cd ~ && cat << 'EOF' > gsp751.sh
 #!/bin/bash
 
 # Enhanced Color Definitions
@@ -34,6 +34,7 @@ fi
 
 # 2. Clean Up and Repository Pre-Setup Tasks
 echo "${CYAN}${BOLD}[Phase 1/4] Cleaning workspace and setting up Terraform repositories...${RESET}"
+cd ~
 rm -rf main.tf variables.tf outputs.tf modules/ terraform-google-network/ terraform.tfstate* .terraform*
 
 cat <<'EOF_ENV' > ~/.customize_environment
@@ -175,6 +176,4 @@ echo "${BG_GREEN}${BOLD}========================================================
 echo "${WHITE}Thank you for deploying with Dr. Akshith's Cloud Solutions!${RESET}"
 echo
 EOF
-
-chmod +x gsp751.sh
-./gsp751.sh
+chmod +x gsp751.sh && ./gsp751.sh
