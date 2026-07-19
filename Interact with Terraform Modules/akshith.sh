@@ -1,3 +1,4 @@
+cd ~ && cat << 'EOF' > gsp751.sh
 #!/bin/bash
 
 # Enhanced Color Definitions
@@ -33,13 +34,14 @@ fi
 
 # 2. Clean Up and Repository Pre-Setup Tasks
 echo "${CYAN}${BOLD}[Phase 1/4] Cleaning workspace and setting up Terraform repositories...${RESET}"
+cd ~
 rm -rf main.tf variables.tf outputs.tf modules/ terraform-google-network/ terraform.tfstate* .terraform*
 
-cat <<'EOF' > ~/.customize_environment
+cat <<'EOF_ENV' > ~/.customize_environment
 wget -O - https://hashicorp.com | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install -y terraform
-EOF
+EOF_ENV
 bash ~/.customize_environment
 
 # 3. Task 1: Baseline Network Module Setup
@@ -93,7 +95,7 @@ cat > LICENSE <<EOF
 Licensed under the Apache License, Version 2.0 (the "License");
 EOF
 
-cat > website.tf <<'EOF'
+cat > website.tf <<'EOF_WEB'
 resource "google_storage_bucket" "bucket" {
   name                        = var.name
   project                     = var.project_id
@@ -117,9 +119,9 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 }
-EOF
+EOF_WEB
 
-cat > variables.tf <<'EOF'
+cat > variables.tf <<'EOF_VAR'
 variable "name" { type = string }
 variable "project_id" { type = string }
 variable "location" { type = string }
@@ -128,11 +130,11 @@ variable "labels" { type = map(string); default = null }
 variable "versioning" { type = bool; default = true }
 variable "force_destroy" { type = bool; default = true }
 variable "lifecycle_rules" { type = list(any); default = [] }
-EOF
+EOF_VAR
 
-cat > outputs.tf <<'EOF'
+cat > outputs.tf <<'EOF_OUT'
 output "bucket" { value = google_storage_bucket.bucket }
-EOF
+EOF_OUT
 
 # 5. Populate Parent Orchestration Configuration Layer
 echo "${CYAN}${BOLD}[Phase 4/4] Finalizing orchestration maps and compiling deployment...${RESET}"
@@ -156,9 +158,9 @@ variable "project_id" { type = string; default = "$PROJECT_ID" }
 variable "name" { type = string; default = "$PROJECT_ID" }
 EOF
 
-cat > outputs.tf <<'EOF'
+cat > outputs.tf <<'EOF_ROOT_OUT'
 output "bucket-name" { value = module.gcs-static-website-bucket.bucket.name }
-EOF
+EOF_ROOT_OUT
 
 terraform init &>/dev/null
 terraform apply --auto-approve &>/dev/null
@@ -173,3 +175,5 @@ echo "${BG_GREEN}${BOLD}                LAB GSP751 COMPLETED SUCCESSFULLY!      
 echo "${BG_GREEN}${BOLD}========================================================================${RESET}"
 echo "${WHITE}Thank you for deploying with Dr. Akshith's Cloud Solutions!${RESET}"
 echo
+EOF
+chmod +x gsp751.sh && ./gsp751.sh
