@@ -33,9 +33,7 @@
 
 <div align="center">
 
-## ⚡ `QUICK RUN` ⚡
 
-</div>
 
 <div align="center">
 
@@ -53,6 +51,7 @@
 
 **🖥️ Open Cloud Shell → Click Copy below → Paste into terminal and press Enter:**
 
+
 <div style="border: 2px solid #00FF00; border-radius: 8px; padding: 15px; background-color: #1a1a2e; margin: 15px 0;">
 <div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ ALL-IN-ONE ONE-CLICK COMMAND:</div>
 
@@ -63,67 +62,22 @@ curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/m
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-​<div style="border: 1px solid #555; border-radius: 8px; padding: 15px; background-color: #161616; margin: 15px 0;">
-<div style="color: #888; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">2️⃣ STEP 2: RUN THE SCRIPT</div>
-
-sudo chmod +x akshith.sh && ./akshith.sh
-
-</div>
-
-
----
-
-![](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=80&section=footer&fontSize=0)
-
 <div align="center">
+​🌍 Find Me Here
 
+YouTube
+​
 
-```bash
-
-
-## 🌍 Find Me Here
-
-<br/>
-
-[![YouTube](https://img.shields.io/badge/-%F0%9F%94%A5%20GOOGLE%20CLOUD%20ARCADE-FF6B6B?style=for-the-badge)](https://youtube.com/@dr.m.akshith?sub_confirmation=1)
-
-<br/>
 <a href="https://youtube.com/@dr.m.akshith?sub_confirmation=1" target="_blank" style="text-decoration: none;">
 <div style="display: inline-block; background-color: #FF0000; color: #FFFFFF; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; letter-spacing: 1px;">
 🚨 CLICK HERE TO SUBSCRIBE ON YOUTUBE 🚨
 </div>
 </a>
 
-<br/><br/>
 
-</div>
-
-
-
-```bash
-[![GitHub](https://img.shields.io/badge/🐙_GITHUB-Follow_Me-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=282828)](https://github.com/mardhaakshith2013-byte)
-
-</div>
-
-<br/>
-
-
-
-
-
-<div align="center">
+GitHub
+​</div>
+​<div align="center">
 ​©️ Credit
 ​🙏 DM for credit or removal request (no copyright intended)
 ©️ All rights and credits for the original content belong to Google Cloud
