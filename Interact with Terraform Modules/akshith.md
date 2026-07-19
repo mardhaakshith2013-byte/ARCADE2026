@@ -12,8 +12,8 @@ export REGION=
 ```
 
 ```bash
-curl -LO https://githubusercontent.com
-sudo chmod +x akshith.sh
+curl -s -o akshith.sh "https://githubusercontent.com"
+chmod +x akshith.sh
 ./akshith.sh
 ```
 
