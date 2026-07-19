@@ -12,7 +12,7 @@ export REGION=
 ```
 
 ```bash
-curl -LO https://githubusercontent.com
+curl -LO https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/akshith.sh
 sudo chmod +x akshith.sh
 ./akshith.sh
 ```
