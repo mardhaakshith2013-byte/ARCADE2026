@@ -53,7 +53,7 @@ elapsed_since_start() {
 
 # ----------------------------- Welcome Banner --------------------------
 clear
-# Rainbow ASCII Banner for DR AKSHITH
+# Multi-color text banner for DR AKSHITH
 echo -e "${RED_TEXT}  ██████╗ ██████╗     ${YELLOW_TEXT} █████╗ ██╗  ██╗███████╗██╗  ██╗██╗████████╗██╗  ██╗"
 echo -e "${RED_TEXT}  ██╔══██╗██╔══██╗    ${YELLOW_TEXT}██╔══██╗██║ ██╔╝██╔════╝██║  ██║██║╚══██╔══╝██║  ██║"
 echo -e "${GREEN_TEXT}  ██║  ██║██████╔╝    ${CYAN_TEXT}███████║█████╔╝ ███████╗███████║██║   ██║   ███████║"
@@ -63,6 +63,14 @@ echo -e "${BLUE_TEXT}  ╚══════╝ ╚═╝  ╚═╝    ${MAGENT
 echo -e "${RESET_FORMAT}"
 echo -e "${CYAN_TEXT}${BOLD}────────────── Manage Terraform State GSP752 ──────────────${RESET_FORMAT}"
 echo -e "${CYAN_TEXT}${BOLD}────────────── Terraform State: Local → GCS Backend + Import ──────────────${RESET_FORMAT}"
+
+# ----------------------------- Disclaimer -----------------------------
+echo
+echo -e "${YELLOW_TEXT}${BOLD}⚠️  DISCLAIMER & NOTICE:${RESET_FORMAT}"
+echo -e "${WHITE}This script is automated specifically for lab environment verification platforms"
+echo -e "(such as Google Cloud Skills Boost / Qwiklabs GSP752). It modifies state files,"
+echo -e "provisions assets, and builds live instances. Do not run this inside production"
+echo -e "environments without auditing the exact resource changes.${RESET_FORMAT}"
 echo
 
 # ==============================================================================
