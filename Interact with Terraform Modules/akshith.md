@@ -1,3 +1,5 @@
+<div align="center">
+
 ### 🌈 Brought to you by **Dr. Akshith** 🌈
 
 ## Interact with Terraform Modules
@@ -31,7 +33,7 @@
 **🖥️ Open Cloud Shell → Paste → Done!**
 
 ```bash
-curl -LO raw.githubusercontent.com/gcpdecode/Interact-with-Terraform-Modules/5051c50e5d364cc46503cbae03b8a2da36865cca/gsp751.sh
+curl -LO https://githubusercontent.com
 sudo chmod +x gsp751.sh
 ./gsp751.sh
 ```
