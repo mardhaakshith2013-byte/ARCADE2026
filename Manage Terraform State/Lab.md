@@ -55,13 +55,35 @@ sudo chmod +x akshith.sh
 ​</div>
 
 
+---
+
+![](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=80&section=footer&fontSize=0)
+
 <div align="center">
-​🌍 Find Me Here
-​<a href="https://youtube.com/@dr.m.akshith?sub_confirmation=1" target="_blank" style="text-decoration: none;">
-<div style="display: inline-block; background-color: #FF0000; color: #FFFFFF; padding: 10px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s; margin-right: 10px;">
-📹 SUBSCRIBE ON YOUTUBE
+
+## 🌍 Find Me Here
+
+<br/>
+
+[![YouTube](https://img.shields.io/badge/-%F0%9F%94%A5%20GOOGLE%20CLOUD%20ARCADE-FF6B6B?style=for-the-badge)](https://youtube.com/@dr.m.akshith?sub_confirmation=1)
+
+<br/>
+<a href="https://youtube.com/@dr.m.akshith?sub_confirmation=1" target="_blank" style="text-decoration: none;">
+<div style="display: inline-block; background-color: #FF0000; color: #FFFFFF; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; letter-spacing: 1px;">
+🚨 CLICK HERE TO SUBSCRIBE ON YOUTUBE 🚨
 </div>
 </a>
+
+<br/><br/>
+
+[![GitHub](https://img.shields.io/badge/🐙_GITHUB-Follow_Me-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=282828)](https://github.com/mardhaakshith2013-byte)
+
+</div>
+
+<br/>
+
+
+
 
 
 <div align="center">
