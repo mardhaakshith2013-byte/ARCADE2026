@@ -61,4 +61,4 @@ Channel Link: https://youtube.com/@dr.m.akshith
 <div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ ALL-IN-ONE ONE-CLICK COMMAND:</div>
 
 ```bash
-curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Automating%20Infrastructure%20on%20Google%20Cloud%20with%20Terraform/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Automating%20Infrastructure%20on%20Google%20Cloud%20with%20Terraform/akshith.sh)" && sudo chmod +x akshith.sh && ./akshith.sh
+curl -g -LO "https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh" && sudo chmod +x akshith.sh && ./akshith.sh
