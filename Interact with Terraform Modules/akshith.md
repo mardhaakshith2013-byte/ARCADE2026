@@ -8,7 +8,7 @@
 
 ### Run the following Commands in Cloud Shell
 ```bash
-export REGION=us-central1
+export REGION=
 ```
 
 ```bash
