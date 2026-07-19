@@ -51,3 +51,24 @@
 curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh)"
 sudo chmod +x akshith.sh
 ./akshith.sh
+
+​</div>
+
+
+<div align="center">
+​🌍 Find Me Here
+​<a href="https://youtube.com/@dr.m.akshith?sub_confirmation=1" target="_blank" style="text-decoration: none;">
+<div style="display: inline-block; background-color: #FF0000; color: #FFFFFF; padding: 10px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s; margin-right: 10px;">
+📹 SUBSCRIBE ON YOUTUBE
+</div>
+</a>
+
+
+<div align="center">
+​©️ Credit
+​🙏 DM for credit or removal request (no copyright intended)
+©️ All rights and credits for the original content belong to Google Cloud
+🔗 Google Cloud Skill Boost Website
+​If this saved your day — smash that ⭐ star!
+​CREDIT: GOOGLE SKILLS ARCADE
+​</div>
