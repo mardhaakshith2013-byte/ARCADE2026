@@ -42,7 +42,7 @@
 
 <br/>
 
-**🖥️ Open Cloud Shell → Click Copy below → Paste into terminal and press Enter:**
+***🖥️ Open Cloud Shell → Click Copy below → Paste into terminal and press Enter:**
 
 <div style="border: 2px solid #00FF00; border-radius: 8px; padding: 15px; background-color: #1a1a2e; margin: 15px 0;">
 <div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ ALL-IN-ONE ONE-CLICK COMMAND:</div>
@@ -50,18 +50,14 @@
 ```bash
 curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh)" && sudo chmod +x akshith.sh && ./akshith.sh
 </div>
+​<div align="center">
 
-
-<div align="center">
 ​🌍 Find Me Here
 ​<a href="https://youtube.com/@dr.m.akshith?sub_confirmation=1" target="_blank" style="text-decoration: none;">
 <div style="display: inline-block; background-color: #FF0000; color: #FFFFFF; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; letter-spacing: 1px;">
 🚨 CLICK HERE TO SUBSCRIBE ON YOUTUBE 🚨
 </div>
 </a>
-
-
-
 
 GitHub
 ​</div>
