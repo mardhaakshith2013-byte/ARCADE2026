@@ -29,7 +29,7 @@ YOUTUBE CHANEL:- https://youtube.com/@dr.m.akshith?si=SH3q4_Hz8uD-fe3-
 
 # ⚡ One-Click Challenge Lab Execution Profile
 
-Open your Google Cloud Shell workspace, copy the command block provided below, paste it directly into the terminal, and press **Enter** to initialize the interactive automation engine:
+Open your Google Cloud Shell workspace, copy the command block provided below, paste it directly into the terminal, and press **Enter** to launch the automated sequence:
 
 ```bash
-curl -sSL "https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/run_lab.sh" | bash
+curl -sSL "[https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/run_lab.sh](https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/run_lab.sh)" | bash
