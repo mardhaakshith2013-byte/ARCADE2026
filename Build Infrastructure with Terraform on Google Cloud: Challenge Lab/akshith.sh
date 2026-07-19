@@ -15,7 +15,6 @@ CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 WHITE='\033[1;37m'
 BOLD='\033[1m'
-DIM='\033[2m'
 NC='\033[0m'
 
 BLUE_TEXT="${BLUE}${BOLD}"
@@ -66,7 +65,26 @@ echo -e "${CYAN_TEXT}${BOLD}🌈 ⚡ DR.M.AKSHITH × CLOUD 🌈 ⚡${RESET_FORMA
 echo -e "${BLUE_TEXT}${BOLD}🚀 Lab ID Focus: GSP345 — Challenge Lab Suite 🚀${RESET_FORMAT}"
 echo
 
-# ----------------------------- Phase 1: Auto-Context Detection -------------------------
+# ----------------------------- Clean Step-by-Step Prompts ------------------------
+echo -e "${GREEN_TEXT}📦 STEP 1: Please enter the GCS BUCKET name:${RESET_FORMAT}"
+echo -n "👉 "
+read BUCKET
+export BUCKET
+echo
+
+echo -e "${BLUE_TEXT}🖥️ STEP 2: Please enter the target compute INSTANCE name:${RESET_FORMAT}"
+echo -n "👉 "
+read INSTANCE
+export INSTANCE
+echo
+
+echo -e "${YELLOW_TEXT}🌐 STEP 3: Please enter the custom VPC name:${RESET_FORMAT}"
+echo -n "👉 "
+read VPC
+export VPC
+echo
+
+# ----------------------------- Phase 1: Context Detection -------------------------
 print_phase "1" "🌍  Autodetecting Project Infrastructure Context"
 
 export PROJECT_ID=$DEVSHELL_PROJECT_ID
@@ -84,10 +102,6 @@ else
   export ZONE="$DETECTED_ZONE"
 fi
 export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
-
-export BUCKET="tf-bucket-$PROJECT_ID"
-export INSTANCE="tf-instance-3"
-export VPC="tf-vpc"
 
 instances_output=$(gcloud compute instances list --format="value(id)")
 IFS=$'\n' read -r -d '' instance_id_1 instance_id_2 <<< "$instances_output"
