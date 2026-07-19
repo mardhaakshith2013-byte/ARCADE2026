@@ -37,22 +37,59 @@
 
 </div>
 
+<div align="center">
+
+## ⚡ `QUICK RUN` ⚡
+
+</div>
+
 > [!WARNING]
 > 📚 **Educational Use Only!** This script helps you **learn** GCP — not skip it. Read through it before running. Always follow **Qwiklabs ToS**.
 
 <br/>
 
-**🖥️ Open Cloud Shell → Paste → Done!**
+*
+<div align="center">
+
+## ⚡ `QUICK RUN` ⚡
+
+</div>
+
+> [!WARNING]
+> 📚 **Educational Use Only!** This script helps you **learn** GCP — not skip it. Read through it before running. Always follow **Qwiklabs ToS**.
+
+<br/>
+
+**🖥️ Open Cloud Shell → Click Copy below → Paste into terminal and press Enter:**
 
 <div style="border: 2px solid #00FF00; border-radius: 8px; padding: 15px; background-color: #1a1a2e; margin: 15px 0;">
-<div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ EXECUTABLE COMMAND SUITE:</div>
+<div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ ALL-IN-ONE ONE-CLICK COMMAND:</div>
 
 ```bash
-curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh)"
-sudo chmod +x akshith.sh
-./akshith.sh
+curl -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Manage%20Terraform%20State/akshith.sh)" && sudo chmod +x akshith.sh && ./akshith.sh
 
-​</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+​<div style="border: 1px solid #555; border-radius: 8px; padding: 15px; background-color: #161616; margin: 15px 0;">
+<div style="color: #888; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">2️⃣ STEP 2: RUN THE SCRIPT</div>
+
+sudo chmod +x akshith.sh && ./akshith.sh
+
+</div>
 
 
 ---
@@ -60,6 +97,10 @@ sudo chmod +x akshith.sh
 ![](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=80&section=footer&fontSize=0)
 
 <div align="center">
+
+
+```bash
+
 
 ## 🌍 Find Me Here
 
@@ -76,6 +117,11 @@ sudo chmod +x akshith.sh
 
 <br/><br/>
 
+</div>
+
+
+
+```bash
 [![GitHub](https://img.shields.io/badge/🐙_GITHUB-Follow_Me-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=282828)](https://github.com/mardhaakshith2013-byte)
 
 </div>
