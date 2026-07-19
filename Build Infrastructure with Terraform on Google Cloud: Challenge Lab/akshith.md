@@ -71,4 +71,4 @@ This lab systematically tracks, builds, and standardizes multi-tier infrastructu
 <div style="color: #00FF00; font-weight: bold; margin-bottom: 10px; font-family: monospace; font-size: 0.9em;">🖥️ ALL-IN-ONE ONE-CLICK COMMAND:</div>
 
 ```bash
-curl -g -LO "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh)" && sudo chmod +x akshith.sh && ./akshith.sh
+curl -g -LO "https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh" && chmod +x akshith.sh && ./akshith.sh
