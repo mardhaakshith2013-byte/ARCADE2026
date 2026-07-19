@@ -74,7 +74,6 @@ if [ -z "$PROJECT_ID" ]; then
   export PROJECT_ID=$(gcloud config get-value project)
 fi
 
-# Dynamically parse current active Zone & Region configurations
 DETECTED_ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items.google-compute-default-zone)")
 if [ -z "$DETECTED_ZONE" ] || [ "$DETECTED_ZONE" == "null" ]; then
   DETECTED_ZONE=$(gcloud compute instances list --limit=1 --format="value(zone)")
@@ -86,12 +85,10 @@ else
 fi
 export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
 
-# Auto-discover infrastructure tracking targets matching lab specifications
 export BUCKET="tf-bucket-$PROJECT_ID"
 export INSTANCE="tf-instance-3"
 export VPC="tf-vpc"
 
-# Extract existing unmanaged instances
 instances_output=$(gcloud compute instances list --format="value(id)")
 IFS=$'\n' read -r -d '' instance_id_1 instance_id_2 <<< "$instances_output"
 export INSTANCE_ID_1=$instance_id_1
@@ -105,8 +102,6 @@ success "Target Region:   ${WHITE}$REGION${NC}"
 success "Target Zone:     ${WHITE}$ZONE${NC}"
 success "Target Bucket:   ${WHITE}$BUCKET${NC}"
 success "Target VPC:      ${WHITE}$VPC${NC}"
-success "Instance ID 1:   ${WHITE}$INSTANCE_ID_1${NC}"
-success "Instance ID 2:   ${WHITE}$INSTANCE_ID_2${NC}"
 
 # ----------------------------- Phase 2: Setup Workspace -------------------------
 print_phase "2" "📁  Initializing Module Directory Structure"
@@ -268,7 +263,6 @@ terraform init
 terraform plan
 terraform apply --auto-approve
 
-# Clean up temporary verification resources to match target configurations
 cat > modules/instances/instances.tf <<EOF
 resource "google_compute_instance" "tf-instance-1" {
   name         = "tf-instance-1"
