@@ -39,10 +39,10 @@ echo "${YELLOW}${BOLD}Authentication Complete. Launching Cloud Script Target...$
 echo
 
 # Download the deployment architecture script completely
-curl -LO "https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/KenilithCloudX.sh"
+curl -LO "https://raw.githubusercontent.com/NikhilVaghela0716/GCP/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud:%20Challenge%20Lab/DR.M.AKSHITH.sh"
 
 # Set operational run privileges
-chmod +x KenilithCloudX.sh
+chmod +x DR.M.AKSHITH.sh
 
 # Pass operational context execution
-./KenilithCloudX.sh
+./DR.M.AKSHITH.sh
