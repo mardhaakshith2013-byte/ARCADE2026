@@ -27,7 +27,9 @@ YOUTUBE CHANEL:- https://youtube.com/@dr.m.akshith?si=SH3q4_Hz8uD-fe3-
 > 📚 **Educational & Lab Verification Use Only!**  
 > This script modifies active cloud resources, sets up persistent GCS state storage, and scales instances within sandbox environments. Review all configuration arrays before utilizing inside production cloud platforms. Always follow platform Terms of Service.
 
-Open your **Google Cloud Shell**, copy the one-click command string below, paste it directly into your terminal window, and press **Enter**:
+# ⚡ One-Click Challenge Lab Execution Profile
+
+Open your Google Cloud Shell workspace, copy the command block provided below, paste it directly into the terminal, and press **Enter** to initialize the interactive automation engine:
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/akshith.sh) | bash
+curl -sSL "[https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/run_lab.sh](https://raw.githubusercontent.com/mardhaakshith2013-byte/ARCADE2026/main/Build%20Infrastructure%20with%20Terraform%20on%20Google%20Cloud%3A%20Challenge%20Lab/run_lab.sh)" 
