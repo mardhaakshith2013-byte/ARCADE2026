@@ -37,7 +37,6 @@ echo -e "\n${YELLOW}⚙️ Automatically detecting environment variables...${RES
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 
-# Auto-detect region from gcloud config
 AUTO_REGION=$(gcloud config get-value compute/region 2>/dev/null)
 AUTO_ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
 
@@ -49,7 +48,6 @@ else
     export REGION="us-central1"
 fi
 
-# Extract multi-region scan location (us, europe, or asia)
 SCAN_LOCATION=$(echo "$REGION" | awk -F'-' '{print $1}')
 if [ "$SCAN_LOCATION" == "us" ] || [ "$SCAN_LOCATION" == "europe" ] || [ "$SCAN_LOCATION" == "asia" ]; then
     export SCAN_LOCATION="$SCAN_LOCATION"
@@ -144,7 +142,7 @@ EOF
 gcloud builds submit
 
 # ------------------------------------------------------------------------------
-# Step 4: Local On-Demand Scanning (Using Multi-Region location flag)
+# Step 4: Local On-Demand Scanning
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}🚀 Performing On-Demand Local Image Scan (Location: ${SCAN_LOCATION})...${RESET}"
 docker build -t "${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image" .
@@ -160,9 +158,9 @@ export SEVERITY=CRITICAL
 gcloud artifacts docker images list-vulnerabilities $(cat scan_id.txt) --location="${SCAN_LOCATION}" --format="value(vulnerability.effectiveSeverity)" | if grep -Fxq ${SEVERITY}; then echo "Failed vulnerability check for ${SEVERITY} level"; else echo "No ${SEVERITY} Vulnerabilities found"; fi
 
 # ------------------------------------------------------------------------------
-# Step 5: Integrate Vulnerability Scanning into CI/CD Pipeline & Build Break Test
+# Step 5: Integrate Security Gate (Build Break Test)
 # ------------------------------------------------------------------------------
-echo -e "\n${GREEN}🚀 Updating cloudbuild.yaml to test Security Gate (Build Break)...${RESET}"
+echo -e "\n${GREEN}🚀 Testing Security Gate (Build Break)...${RESET}"
 
 cat > ./cloudbuild.yaml << EOF
 steps:
@@ -200,15 +198,16 @@ images:
   - ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
 EOF
 
-# Temporarily disable set -e because this build is intended to fail for security gate check
 set +e
 gcloud builds submit
 set -e
 
 # ------------------------------------------------------------------------------
-# Step 6: Fix Vulnerabilities (Base Image Upgrade to Clean Alpine)
+# Step 6: Fix the Vulnerability (Clean Image)
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}🚀 Upgrading Dockerfile to Python Alpine & Passing Security Gate...${RESET}"
+
+cd ~/vuln-scan
 
 cat > ./Dockerfile << 'EOF'
 FROM python:3.12-alpine
@@ -219,6 +218,25 @@ RUN pip3 install gunicorn==22.0.0
 RUN pip3 install Werkzeug==3.0.3
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
 EOF
+
+# 1. Navigate to your workspace directory
+cd ~/vuln-scan
+
+# 2. Update Dockerfile to use clean Python Alpine image
+cat > ./Dockerfile << 'EOF'
+FROM python:3.12-alpine
+WORKDIR /app
+COPY . ./
+RUN pip3 install Flask==3.0.3
+RUN pip3 install gunicorn==22.0.0
+RUN pip3 install Werkzeug==3.0.3
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
+EOF
+
+# 3. Submit the final build to Cloud Build
+gcloud builds submit
+
+
 
 gcloud builds submit
 
