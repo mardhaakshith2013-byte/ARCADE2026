@@ -21,4 +21,6 @@ This guide walks through configuring a secure container build pipeline using **G
 To run the complete lab end-to-end (including handling the intentional build break step), execute this command in your Cloud Shell:
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Secure%20Builds%20with%20Cloud%20Build/gsp1184.sh](https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Secure%20Builds%20with%20Cloud%20Build/gsp1184.sh) | bash
+curl -LO raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Secure%20Builds%20with%20Cloud%20Build/gsp1184.sh
+chmod +x gsp1184.sh
+./gsp1184.sh
