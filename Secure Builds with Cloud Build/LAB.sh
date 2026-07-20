@@ -30,32 +30,35 @@ echo -e "${CYAN}${BOLD}     STARTING GSP1184 SECURE BUILDS AUTOMATION           
 echo -e "${CYAN}${BOLD}=================================================================="${RESET}
 
 # ------------------------------------------------------------------------------
-# Interactive Zone Input & Location Logic
+# Automatic Environment & Location Detection
 # ------------------------------------------------------------------------------
-echo -e "\n${YELLOW}📍 Interactive Setup:${RESET}"
-read -p "Enter your assigned ZONE (e.g., us-central1-a, europe-west1-b, asia-east1-a): " USER_ZONE
+echo -e "\n${YELLOW}⚙️ Automatically detecting environment variables...${RESET}"
 
-if [ -z "$USER_ZONE" ]; then
-    USER_ZONE="us-central1-a"
-    echo -e "${YELLOW}No zone entered. Defaulting to: ${USER_ZONE}${RESET}"
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+
+# Auto-detect region from gcloud config
+AUTO_REGION=$(gcloud config get-value compute/region 2>/dev/null)
+AUTO_ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
+
+if [ -n "$AUTO_REGION" ]; then
+    export REGION="$AUTO_REGION"
+elif [ -n "$AUTO_ZONE" ]; then
+    export REGION=$(echo "$AUTO_ZONE" | awk -F'-' '{print $1"-"$2}')
+else
+    export REGION="us-central1"
 fi
 
-export ZONE="$USER_ZONE"
-export REGION=$(echo "$ZONE" | awk -F'-' '{print $1"-"$2}')
-
 # Extract multi-region scan location (us, europe, or asia)
-SCAN_LOCATION=$(echo "$ZONE" | awk -F'-' '{print $1}')
+SCAN_LOCATION=$(echo "$REGION" | awk -F'-' '{print $1}')
 if [ "$SCAN_LOCATION" == "us" ] || [ "$SCAN_LOCATION" == "europe" ] || [ "$SCAN_LOCATION" == "asia" ]; then
     export SCAN_LOCATION="$SCAN_LOCATION"
 else
     export SCAN_LOCATION="us"
 fi
 
-export PROJECT_ID=$(gcloud config get-value project)
-export PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
-
 echo -e "${GREEN}Project ID    :${RESET} ${PROJECT_ID}"
-echo -e "${GREEN}Zone          :${RESET} ${ZONE}"
+echo -e "${GREEN}Project Number:${RESET} ${PROJECT_NUMBER}"
 echo -e "${GREEN}Region        :${RESET} ${REGION}"
 echo -e "${GREEN}Scan Location :${RESET} ${SCAN_LOCATION}"
 
