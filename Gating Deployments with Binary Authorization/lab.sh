@@ -1,65 +1,51 @@
 #!/bin/bash
+# ==============================================================================
+# GSP1183: Gating Deployments with Binary Authorization
+# Script provided by DR.M.AKSHITH
+# ==============================================================================
 
-# ==========================================
-# Script by: DR.M.AKSHITH (Fixed & Verified)
-# ==========================================
+set -e # Exit immediately if an unhandled command fails
 
-BOLD_TEXT="\033[1m"
-RESET_FORMAT="\033[0m"
-BLUE_TEXT="\033[1;34m"
-CYAN_TEXT="\033[1;36m"
-GREEN_TEXT="\033[1;32m"
-RED_TEXT="\033[1;31m"
-YELLOW_TEXT="\033[1;33m"
+# Formatting Definitions
+BOLD="\033[1m"
+CYAN="\033[1;36m"
+GREEN="\033[1;32m"
+YELLOW="\033[1;33m"
+RESET="\033[0m"
 
-print_step() {
-    echo -e "\n${CYAN_TEXT}${BOLD_TEXT}🚀 [TASK] $1${RESET_FORMAT}"
-    echo -e "${CYAN_TEXT}─────────────────────────────────────────────────────────────────${RESET_FORMAT}"
-}
+# ==============================================================================
+# AKSHITH BANNER
+# ==============================================================================
+echo -e "${CYAN}${BOLD}"
+echo "█████╗ ██╗██╗  ██╗███████╗██╗  ██╗██╗████████╗██╗  ██╗"
+echo "██╔══██╗██║██║ ██╔╝██╔════╝██║  ██║██║╚══██╔══╝██║  ██║"
+echo "███████║██║█████═╝ ███████╗███████║██║   ██║   ███████║"
+echo "██╔══██║██║██╔═██╗ ╚════██║██╔══██║██║   ██║   ██╔══██║"
+echo "██║  ██║██║██║  ██╗███████║██║  ██║██║   ██║   ██║  ██║"
+echo "╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝"
+echo -e "${RESET}"
 
-print_info() {
-    echo -e "${BLUE_TEXT}ℹ️  $1${RESET_FORMAT}"
-}
+echo -e "${CYAN}${BOLD}=================================================================="${RESET}
+echo -e "${CYAN}${BOLD}     STARTING GSP1183 AUTOMATED DEPLOYMENT & ATTESTATION          "${RESET}
+echo -e "${CYAN}${BOLD}=================================================================="${RESET}
 
-echo "${CYAN_TEXT}${BOLD_TEXT}==================================================================${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}     DR.M.AKSHITH - INITIATING EXECUTION...  ${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}==================================================================${RESET_FORMAT}"
-echo
-
-validate_project_id() {
-  local project_id=$1
-  if [[ -z "$project_id" ]]; then
-    echo -e "${RED_TEXT}❌ Error: PROJECT_ID is not set.${RESET_FORMAT}"
-    exit 1
-  fi
-}
-
-set_zone_and_region() {
-  ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
-  REGION=$(gcloud config get-value compute/region 2>/dev/null)
-
-  if [[ -z "$ZONE" ]]; then
-    read -p "👉 Enter your zone (e.g., us-central1-c): " ZONE
-  fi
-
-  if [[ -z "$REGION" ]]; then
-    REGION=$(echo $ZONE | awk -F'-' '{print $1"-"$2}')
-  fi
-
-  export ZONE
-  export REGION
-  echo -e "${GREEN_TEXT}✅ Context -> Zone: ${BOLD_TEXT}$ZONE${RESET_FORMAT}${GREEN_TEXT} | Region: ${BOLD_TEXT}$REGION${RESET_FORMAT}"
-}
-
-print_info "Initializing context variables..."
-
+# ------------------------------------------------------------------------------
+# Task 0: Environment setup & Dynamic Zone Detection
+# ------------------------------------------------------------------------------
+echo -e "\n${YELLOW}⚙️ Setting up environment variables and detecting cluster location...${RESET}"
 export PROJECT_ID=$(gcloud config get-value project)
-validate_project_id "$PROJECT_ID"
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
 
-set_zone_and_region
+ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
+if [[ -z "$ZONE" ]]; then
+    ZONE="us-central1-a"
+fi
+REGION=$(echo $ZONE | awk -F'-' '{print $1"-"$2}')
 
-print_step "Enabling Required Google Cloud Services"
+export ZONE
+export REGION
+
+echo -e "${YELLOW}🔑 Enabling necessary GCP service APIs...${RESET}"
 gcloud services enable \
   cloudkms.googleapis.com \
   cloudbuild.googleapis.com \
@@ -68,10 +54,12 @@ gcloud services enable \
   artifactregistry.googleapis.com \
   containerscanning.googleapis.com \
   ondemandscanning.googleapis.com \
-  binaryauthorization.googleapis.com
+  binaryauthorization.googleapis.com > /dev/null 2>&1
 
-# Task 1: Artifact Registry
-print_step "Creating Artifact Registry Repository"
+# ------------------------------------------------------------------------------
+# Task 1: Create Artifact Registry Repository & Build Baseline Image
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 1: Creating Artifact Registry & Building Sample Image...${RESET}"
 gcloud artifacts repositories create artifact-scanning-repo \
   --repository-format=docker \
   --location=$REGION \
@@ -79,30 +67,24 @@ gcloud artifacts repositories create artifact-scanning-repo \
 
 gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
-mkdir -p vuln-scan && cd vuln-scan
+mkdir -p ~/vuln-scan && cd ~/vuln-scan
 
-cat > ./Dockerfile << EOF
+cat > ./Dockerfile << 'EOF'
 FROM python:3.8-alpine   
-
 WORKDIR /app
 COPY . ./
-
-RUN pip3 install Flask==2.1.0
-RUN pip3 install gunicorn==20.1.0
-RUN pip3 install Werkzeug==2.2.2
-
-CMD exec gunicorn --bind :\$PORT --workers 1 --threads 8 main:app
+RUN pip3 install Flask==2.1.0 gunicorn==20.1.0 Werkzeug==2.2.2
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
 EOF
 
-cat > ./main.py << EOF
+cat > ./main.py << 'EOF'
 import os
 from flask import Flask
-
 app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    name = os.environ.get("NAME", "Worlds")
+    name = os.environ.get("NAME", "World")
     return "Hello {}!".format(name)
 
 if __name__ == "__main__":
@@ -111,10 +93,12 @@ EOF
 
 gcloud builds submit . -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
 
-# Task 2: Attestor Setup
-print_step "Setting up Binary Authorization Attestor"
+# ------------------------------------------------------------------------------
+# Tasks 2 & 3: Container Analysis Note, Attestor, & Cloud KMS Asymmetric Key
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Tasks 2 & 3: Setting up Container Analysis Note, Attestor, and Cloud KMS Key...${RESET}"
 
-cat > ./vulnz_note.json << EOM
+cat > ./vulnz_note.json << EOF
 {
   "attestation": {
     "hint": {
@@ -122,17 +106,16 @@ cat > ./vulnz_note.json << EOM
     }
   }
 }
-EOM
+EOF
 
 NOTE_ID=vulnz_note
+ATTESTOR_ID=vulnz-attestor
 
-curl -X POST \
+curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     --data-binary @./vulnz_note.json \
-    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
-
-ATTESTOR_ID=vulnz-attestor
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}" > /dev/null
 
 gcloud container binauthz attestors create $ATTESTOR_ID \
     --attestation-authority-note=$NOTE_ID \
@@ -140,7 +123,7 @@ gcloud container binauthz attestors create $ATTESTOR_ID \
 
 BINAUTHZ_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
 
-cat > ./iam_request.json << EOM
+cat > ./iam_request.json << EOF
 {
   "resource": "projects/${PROJECT_ID}/notes/${NOTE_ID}",
   "policy": {
@@ -154,16 +137,13 @@ cat > ./iam_request.json << EOM
     ]
   }
 }
-EOM
+EOF
 
-curl -X POST \
+curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     --data-binary @./iam_request.json \
-    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy"
-
-# Task 3: KMS Key Setup
-print_step "Provisioning Cloud KMS Asymmetric Keys"
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy" > /dev/null
 
 KEY_LOCATION=global
 KEYRING=binauthz-keys
@@ -185,9 +165,10 @@ gcloud beta container binauthz attestors public-keys add \
     --keyversion-key="${KEY_NAME}" \
     --keyversion="${KEY_VERSION}" || true
 
-# Task 4: Manual Attestation
-print_step "Generating Manual Cryptographic Attestation"
-
+# ------------------------------------------------------------------------------
+# Task 4: Create Manual Signed Attestation Baseline
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 4: Generating Manual Attestation...${RESET}"
 CONTAINER_PATH=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
 DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:latest --format='get(image_summary.digest)')
 
@@ -201,31 +182,42 @@ gcloud beta container binauthz attestations sign-and-create \
     --keyversion-key="${KEY_NAME}" \
     --keyversion="${KEY_VERSION}"
 
-# Task 5: GKE Cluster
-print_step "Creating GKE Cluster with Binary Authorization"
-
+# ------------------------------------------------------------------------------
+# Task 5: Create GKE Cluster & Safely Obtain Credentials
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 5: Creating GKE Cluster (binauthz) & Fetching Credentials...${RESET}"
 gcloud beta container clusters create binauthz \
     --zone $ZONE \
     --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE || true
 
+CLUSTER_ZONE=$(gcloud container clusters list --filter="name:binauthz" --format="value(zone)")
+if [[ -n "$CLUSTER_ZONE" ]]; then
+  ZONE=$CLUSTER_ZONE
+fi
+
+gcloud container clusters get-credentials binauthz --zone $ZONE
+
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
-    --role="roles/container.developer"
+    --role="roles/container.developer" > /dev/null
 
-# Task 6: Automated Signing Pipeline
-print_step "Configuring Continuous Integration Automation Roles & Builder"
+# ------------------------------------------------------------------------------
+# Task 6: Custom Attestation Builder & Cloud Build Pipeline
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 6: Building Custom Attestation Step & Running CI/CD Pipeline...${RESET}"
 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/binaryauthorization.attestorsViewer
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/cloudkms.signerVerifier
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com --role roles/cloudkms.signerVerifier
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/containeranalysis.notes.attacher
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/iam.serviceAccountUser"
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/ondemandscanning.admin"
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/binaryauthorization.attestorsViewer > /dev/null
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/cloudkms.signerVerifier > /dev/null
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com --role roles/cloudkms.signerVerifier > /dev/null
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com --role roles/containeranalysis.notes.attacher > /dev/null
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/iam.serviceAccountUser" > /dev/null
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/ondemandscanning.admin" > /dev/null
 
+rm -rf cloud-builders-community
 git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git
 cd cloud-builders-community/binauthz-attestation
 gcloud builds submit . --config cloudbuild.yaml
-cd ../..
+cd ~/vuln-scan
 rm -rf cloud-builders-community
 
 cat > ./cloudbuild.yaml << EOF
@@ -259,33 +251,34 @@ EOF
 
 gcloud builds submit
 
-# Task 7: Deploy Signed Image
-print_step "Updating Policy & Deploying Compliant Image"
+# ------------------------------------------------------------------------------
+# Task 7: Policy Import & Deploy Signed Image
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 7: Importing Binary Authorization Policy & Deploying Signed Image...${RESET}"
 
-gcloud container clusters get-credentials binauthz --zone $ZONE
-
-cat > binauth_policy.yaml << EOM
+cat > binauth_policy.yaml << EOF
+clusterAdmissionRules:
+  ${ZONE}.binauthz:
+    enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
+    evaluationMode: REQUIRE_ATTESTATION
+    requireAttestationsBy:
+    - projects/${PROJECT_ID}/attestors/vulnz-attestor
 defaultAdmissionRule:
   enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
   evaluationMode: REQUIRE_ATTESTATION
   requireAttestationsBy:
   - projects/${PROJECT_ID}/attestors/vulnz-attestor
 globalPolicyEvaluationMode: ENABLE
-clusterAdmissionRules:
-  ${ZONE}.binauthz:
-    evaluationMode: REQUIRE_ATTESTATION
-    enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
-    requireAttestationsBy:
-    - projects/${PROJECT_ID}/attestors/vulnz-attestor
-EOM
+name: projects/${PROJECT_ID}/policy
+EOF
 
-gcloud beta container binauthz policy import binauth_policy.yaml
-sleep 10
+gcloud container binauthz policy import binauth_policy.yaml
 
-CONTAINER_PATH=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
-DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:good --format='get(image_summary.digest)')
+sleep 15
 
-cat > deploy.yaml << EOM
+GOOD_DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:good --format='get(image_summary.digest)')
+
+cat > deploy.yaml << EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -314,32 +307,34 @@ spec:
     spec:
       containers:
       - name: deb-httpd
-        image: ${CONTAINER_PATH}@${DIGEST}
+        image: ${CONTAINER_PATH}@${GOOD_DIGEST}
         ports:
         - containerPort: 8080
         env:
           - name: PORT
             value: "8080"
-EOM
+EOF
 
 kubectl apply -f deploy.yaml
 
-# Task 8: Attempt Unsigned Image Deployment (Expected to fail/block)
-print_step "Executing Gatekeeping Verification on Unsigned Manifests"
+# ------------------------------------------------------------------------------
+# Task 8: Build Bad Image & Trigger Expected Policy Rejection
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}🚀 Task 8: Pushing Unsigned Image & Verifying Admission Policy Block...${RESET}"
 
 docker build -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:bad .
 docker push ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:bad
 
-DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:bad --format='get(image_summary.digest)')
+BAD_DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:bad --format='get(image_summary.digest)')
 
-cat > deploy_bad.yaml << EOM
+cat > deploy_bad.yaml << EOF
 apiVersion: v1
 kind: Service
 metadata:
-  name: deb-httpd-bad
+  name: deb-httpd
 spec:
   selector:
-    app: deb-httpd-bad
+    app: deb-httpd
   ports:
     - protocol: TCP
       port: 80
@@ -348,27 +343,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deb-httpd-bad
+  name: deb-httpd
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deb-httpd-bad
+      app: deb-httpd
   template:
     metadata:
       labels:
-        app: deb-httpd-bad
+        app: deb-httpd
     spec:
       containers:
-      - name: deb-httpd-bad
-        image: ${CONTAINER_PATH}@${DIGEST}
+      - name: deb-httpd
+        image: ${CONTAINER_PATH}@${BAD_DIGEST}
         ports:
         - containerPort: 8080
         env:
           - name: PORT
             value: "8080"
-EOM
+EOF
 
-kubectl apply -f deploy_bad.yaml || true
+set +e
+kubectl apply -f deploy_bad.yaml
+set -e
 
-echo -e "\n${GREEN_TEXT}${BOLD_TEXT}✅ ALL TASKS EXECUTED SUCCESSFULLY! CHECK YOUR PROGRESS FOR 100/100.${RESET_FORMAT}\n"
+echo -e "\n${CYAN}${BOLD}=================================================================="${RESET}
+echo -e "${GREEN}${BOLD}     LAB EXECUTED SUCCESSFULLY — ALL CHECKS READY FOR 100/100!     "${RESET}
+echo -e "${CYAN}${BOLD}=================================================================="${RESET}
