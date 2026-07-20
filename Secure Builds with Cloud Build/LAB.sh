@@ -69,7 +69,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 # Task 1: Build Initial Docker Application
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}🚀 Task 1: Creating Workspace & Base Dockerfile...${RESET}"
-mkdir -p vuln-scan && cd vuln-scan
+mkdir -p ~/vuln-scan && cd ~/vuln-scan
 
 cat > ./Dockerfile << 'EOF'
 FROM gcr.io/google-appengine/debian11
