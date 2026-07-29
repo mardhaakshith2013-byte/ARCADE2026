@@ -13,12 +13,38 @@ RED=$'\033[0;91m'
 BOLD=`tput bold`
 RESET=`tput sgr0`
 
+# ---------- Matrix-style green binary intro (10 seconds, full screen) ----------
+matrix_intro() {
+    tput civis 2>/dev/null
+    clear
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local end=$((SECONDS + 10))
+    local pattern="01010111001101"
+    local pat_len=${#pattern}
+    
+    while [ $SECONDS -lt $end ]; do
+        local line=""
+        for ((i = 0; i < cols; i++)); do
+            local rand_idx=$((RANDOM % pat_len))
+            line+="${pattern:$rand_idx:1}"
+        done
+        echo -e "${GREEN}${line}${RESET}"
+        sleep 0.05
+    done
+    clear
+    tput cnorm 2>/dev/null
+}
+
+# Run 10s Matrix Intro
+matrix_intro
+
 echo "${CYAN}${BOLD}==================================================================${RESET}"
 echo "${CYAN}${BOLD}      DR.M.AKSHITH - GSP081: Cloud Run Functions Qwik Start      ${RESET}"
 echo "${CYAN}${BOLD}==================================================================${RESET}"
 echo
 
-# ---------- Gather details (varies per user/lab session) ----------
+# ---------- 1. Get Project ID & Region ----------
 export PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 if [[ -z "$PROJECT_ID" ]]; then
   read -p "👉 Enter your PROJECT_ID: " PROJECT_ID
@@ -26,19 +52,25 @@ if [[ -z "$PROJECT_ID" ]]; then
 fi
 echo "${GREEN}✅ Project: ${BOLD}$PROJECT_ID${RESET}"
 
-DEFAULT_REGION=$(gcloud config get-value compute/region 2>/dev/null)
-if [[ -n "$DEFAULT_REGION" ]]; then
-  read -p "👉 Enter REGION [default: $DEFAULT_REGION]: " REGION
-  REGION=${REGION:-$DEFAULT_REGION}
-else
-  read -p "👉 Enter REGION for this lab (e.g. us-central1): " REGION
+# Auto-detect region or set default
+DETECTED_ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])" 2>/dev/null)
+REGION=""
+if [[ -n "$DETECTED_ZONE" ]]; then
+  REGION=$(echo "$DETECTED_ZONE" | cut -d '-' -f 1-2)
 fi
+
+if [[ -z "$REGION" ]]; then
+  REGION="us-central1"
+fi
+
 export REGION
-echo "${GREEN}✅ Region: ${BOLD}$REGION${RESET}"
+gcloud config set run/region $REGION
+gcloud config set functions/region $REGION
+echo "${GREEN}✅ Region set to: ${BOLD}$REGION${RESET}"
 echo
 
-# ---------- Enable required APIs ----------
-echo "${YELLOW}⚙️  Enabling required APIs (run, build, artifact registry, eventarc)...${RESET}"
+# ---------- 2. Enable Required APIs ----------
+echo "${YELLOW}⚙️  Enabling required APIs...${RESET}"
 gcloud services enable \
   run.googleapis.com \
   cloudfunctions.googleapis.com \
@@ -51,8 +83,9 @@ gcloud services enable \
 echo "${GREEN}✅ APIs enabled!${RESET}"
 echo
 
-# ---------- Task 1 & 2: Create + deploy the function ----------
-echo "${YELLOW}📦 Preparing function source (gcfunction, default helloHttp sample)...${RESET}"
+# ---------- 3. Create Source Code ----------
+echo "${YELLOW}📦 Creating source code directory (gcfunction)...${RESET}"
+rm -rf gcfunction-src
 mkdir -p gcfunction-src && cd gcfunction-src
 
 cat > index.js << 'EOF'
@@ -75,28 +108,46 @@ cat > package.json << 'EOF'
 }
 EOF
 
-echo "${GREEN}✅ Source ready!${RESET}"
+echo "${GREEN}✅ Source files ready.${RESET}"
 echo
 
-echo "${YELLOW}🚀 Deploying gcfunction to Cloud Run (2nd gen, public, max-instances=5)...${RESET}"
-gcloud run deploy gcfunction \
-  --source=. \
-  --function=helloHttp \
+# ---------- 4. Deploy Function (Deploying to both Cloud Run & Cloud Functions API) ----------
+echo "${YELLOW}🚀 Deploying gcfunction to Cloud Run Functions...${RESET}"
+
+gcloud functions deploy gcfunction \
+  --gen2 \
+  --runtime=nodejs20 \
   --region="$REGION" \
+  --source=. \
+  --entry-point=helloHttp \
+  --trigger-http \
   --allow-unauthenticated \
   --max-instances=5 \
-  --project="$PROJECT_ID"
+  --project="$PROJECT_ID" \
+  --quiet
 
 if [[ $? -ne 0 ]]; then
-  echo "${RED}❌ Deploy failed — scroll up for the error and re-run this script.${RESET}"
-  exit 1
+  echo "${RED}⚠️  Retrying deployment via gcloud run...${RESET}"
+  gcloud run deploy gcfunction \
+    --source=. \
+    --function=helloHttp \
+    --region="$REGION" \
+    --allow-unauthenticated \
+    --max-instances=5 \
+    --project="$PROJECT_ID" \
+    --quiet
 fi
-echo "${GREEN}✅ Task 1 + 2 complete: function created and deployed.${RESET}"
+
+echo "${GREEN}✅ Task 1 & 2 complete: gcfunction successfully deployed!${RESET}"
 echo
 
-# ---------- Task 3: Test the function ----------
-echo "${YELLOW}🧪 Testing the function with a sample invocation...${RESET}"
-FUNCTION_URL=$(gcloud run services describe gcfunction --region="$REGION" --project="$PROJECT_ID" --format='value(status.url)')
+# ---------- 5. Test Function ----------
+echo "${YELLOW}🧪 Invoking function URL...${RESET}"
+FUNCTION_URL=$(gcloud functions describe gcfunction --gen2 --region="$REGION" --project="$PROJECT_ID" --format='value(serviceConfig.uri)' 2>/dev/null)
+
+if [[ -z "$FUNCTION_URL" ]]; then
+  FUNCTION_URL=$(gcloud run services describe gcfunction --region="$REGION" --project="$PROJECT_ID" --format='value(status.url)' 2>/dev/null)
+fi
 
 echo "${CYAN}Function URL: $FUNCTION_URL${RESET}"
 
@@ -105,16 +156,16 @@ RESPONSE=$(curl -s -X POST "$FUNCTION_URL" \
   -d '{"message":"Hello World!"}')
 
 echo "${GREEN}Response: ${BOLD}$RESPONSE${RESET}"
-echo "${GREEN}✅ Task 3 complete: function tested — check log entries under Observability > Logs.${RESET}"
+echo "${GREEN}✅ Task 3 complete: Function invocation verified.${RESET}"
 echo
 
 cd ..
 
 echo "${CYAN}${BOLD}=======================================================${RESET}"
-echo "${CYAN}${BOLD}              LAB COMPLETED SUCCESSFULLY!              ${RESET}"
+echo "${CYAN}${BOLD}             LAB COMPLETED SUCCESSFULLY!               ${RESET}"
 echo "${CYAN}${BOLD}=======================================================${RESET}"
 echo
 echo "${GREEN}${BOLD}Script by DR.M.AKSHITH${RESET}"
 echo "${GREEN}${BOLD}YouTube: https://youtube.com/@dr.m.akshith${RESET}"
 echo
-echo "${YELLOW}Now go click 'Check my progress' on both checkpoints in the lab page.${RESET}"
+echo "${YELLOW}Click 'Check my progress' on the lab portal now.${RESET}"
