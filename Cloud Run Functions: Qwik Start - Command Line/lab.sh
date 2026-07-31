@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# ==========================================
-# Script by: DR.M.AKSHITH
-# YouTube: https://youtube.com/@dr.m.akshith
-# Lab: Cloud Run Functions: Qwik Start - Console (GSP081/GSP080)
-# ==========================================
-
 # Enhanced Color Definitions
 COLOR_BLACK=$'\033[0;30m'
 COLOR_RED=$'\033[0;31m'
@@ -25,71 +19,10 @@ REVERSE=$'\033[7m'
 
 clear
 
-# ---------- Matrix-style binary intro (10 seconds, full screen) ----------
-matrix_intro() {
-    tput civis 2>/dev/null
-    clear
-    local cols
-    cols=$(tput cols 2>/dev/null || echo 80)
-    local end=$((SECONDS + 10))
-    local name="DR.M.AKSHITH"
-    local current_color="$COLOR_GREEN"
-    local last_switch=$SECONDS
-    local frame=0
-    while [ $SECONDS -lt $end ]; do
-        if [ $((SECONDS - last_switch)) -ge 1 ]; then
-            if [ "$current_color" = "$COLOR_GREEN" ]; then
-                current_color="$COLOR_BLUE"
-            else
-                current_color="$COLOR_GREEN"
-            fi
-            last_switch=$SECONDS
-        fi
-
-        frame=$((frame + 1))
-        local line=""
-        if [ $((frame % 6)) -eq 0 ]; then
-            local pad=$(( (cols - ${#name}) / 2 ))
-            [ $pad -lt 0 ] && pad=0
-            line=$(printf '%*s' "$pad" '')
-            line+="$name"
-        else
-            for ((i = 0; i < cols; i++)); do
-                line+="$((RANDOM % 2))"
-            done
-        fi
-        echo -e "${current_color}${BOLD}${line}${COLOR_RESET}"
-        sleep 0.05
-    done
-    clear
-    tput cnorm 2>/dev/null
-}
-
-# ---------- Big bold name banner ----------
-big_text() {
-    if command -v figlet &> /dev/null; then
-        echo -e "${COLOR_BLUE}${BOLD}"
-        figlet "$1"
-        echo -e "${COLOR_RESET}"
-    else
-        echo -e "${COLOR_BLUE}${BOLD}"
-        echo "   $1   "
-        echo -e "${COLOR_RESET}"
-    fi
-}
-
-if ! command -v figlet &> /dev/null; then
-    sudo apt-get update -qq &> /dev/null
-    sudo apt-get install -y figlet -qq &> /dev/null
-fi
-
-matrix_intro
-big_text "DR.M.AKSHITH"
-
 # Welcome Banner
 echo
 echo "${COLOR_CYAN}${BOLD}┌──────────────────────────────────────────────────────────────┐${COLOR_RESET}"
-echo "${COLOR_CYAN}${BOLD}│              DR.M.AKSHITH - Cloud Tutorial                   │${COLOR_RESET}"
+echo "${COLOR_CYAN}${BOLD}│         Welcome to Dr.M.AKSHITH   Cloud Tutorial           │${COLOR_RESET}"
 echo "${COLOR_CYAN}${BOLD}└──────────────────────────────────────────────────────────────┘${COLOR_RESET}"
 echo
 
@@ -112,19 +45,11 @@ gcloud services enable \
 export PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUMBER=$(gcloud projects list --filter="project_id:$PROJECT_ID" --format='value(project_number)')
 export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])" 2>/dev/null)
+--format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 export REGION=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-region])" 2>/dev/null)
-
-if [[ -z "$REGION" ]]; then
-  REGION="us-central1"
-fi
-if [[ -z "$ZONE" ]]; then
-  ZONE="us-central1-a"
-fi
+--format="value(commonInstanceMetadata.items[google-compute-default-region])")
 
 gcloud config set compute/region $REGION
-gcloud config set compute/zone $ZONE
 
 # Configure IAM
 SERVICE_ACCOUNT=$(gsutil kms serviceaccount -p $PROJECT_NUMBER)
@@ -151,7 +76,32 @@ EOF
 
 gcloud projects set-iam-policy $PROJECT_ID policy.yaml
 
-# Function Retry Helper
+# Deploy HTTP Function
+echo
+echo "${COLOR_BLUE}${BOLD}🚀 Deploying HTTP Trigger Function...${COLOR_RESET}"
+echo
+
+mkdir ~/hello-http && cd $_
+
+cat > index.js <<EOF
+const functions = require('@google-cloud/functions-framework');
+
+functions.http('helloWorld', (req, res) => {
+  res.status(200).send('HTTP with Node.js in GCF 2nd gen!');
+});
+EOF
+
+cat > package.json <<EOF
+{
+  "name": "nodejs-http-function",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^2.0.0"
+  }
+}
+EOF
+
 deploy_with_retry() {
   local function_name=$1
   shift
@@ -175,32 +125,6 @@ deploy_with_retry() {
   return 1
 }
 
-# Deploy HTTP Function
-echo
-echo "${COLOR_BLUE}${BOLD}🚀 Deploying HTTP Trigger Function...${COLOR_RESET}"
-echo
-
-mkdir -p ~/hello-http && cd ~/hello-http
-
-cat > index.js <<EOF
-const functions = require('@google-cloud/functions-framework');
-
-functions.http('helloWorld', (req, res) => {
-  res.status(200).send('HTTP with Node.js in GCF 2nd gen!');
-});
-EOF
-
-cat > package.json <<EOF
-{
-  "name": "nodejs-http-function",
-  "version": "1.0.0",
-  "main": "index.js",
-  "dependencies": {
-    "@google-cloud/functions-framework": "^2.0.0"
-  }
-}
-EOF
-
 deploy_with_retry nodejs-http-function \
   --gen2 \
   --runtime nodejs22 \
@@ -222,7 +146,7 @@ echo
 echo "${COLOR_BLUE}${BOLD}🚀 Deploying Storage Trigger Function...${COLOR_RESET}"
 echo
 
-mkdir -p ~/hello-storage && cd ~/hello-storage
+mkdir ~/hello-storage && cd $_
 
 cat > index.js <<EOF
 const functions = require('@google-cloud/functions-framework');
@@ -245,7 +169,7 @@ cat > package.json <<EOF
 EOF
 
 BUCKET="gs://gcf-gen2-storage-$PROJECT_ID"
-gsutil mb -l $REGION $BUCKET 2>/dev/null
+gsutil mb -l $REGION $BUCKET
 
 deploy_with_retry nodejs-storage-function \
   --gen2 \
@@ -272,7 +196,6 @@ echo "${COLOR_BLUE}${BOLD}🚀 Deploying VM Labeler Function...${COLOR_RESET}"
 echo
 
 cd ~
-rm -rf eventarc-samples
 git clone https://github.com/GoogleCloudPlatform/eventarc-samples.git
 cd ~/eventarc-samples/gce-vm-labeler/gcf/nodejs
 
@@ -289,22 +212,7 @@ deploy_with_retry gce-vm-labeler \
 # Create Test VM
 echo
 echo "${COLOR_BLUE}${BOLD}🖥️ Creating Test VM Instance...${COLOR_RESET}"
-gcloud compute instances create instance-1 \
-  --project=$PROJECT_ID \
-  --zone=$ZONE \
-  --machine-type=e2-medium \
-  --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
-  --metadata=enable-osconfig=TRUE,enable-oslogin=true \
-  --maintenance-policy=MIGRATE \
-  --provisioning-model=STANDARD \
-  --service-account=$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
-  --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/trace.append \
-  --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-12-bookworm-v20250311,mode=rw,size=10,type=pd-balanced \
-  --no-shielded-secure-boot \
-  --shielded-vtpm \
-  --shielded-integrity-monitoring \
-  --labels=goog-ops-agent-policy=v2-x86-template-1-4-0,goog-ec-src=vm_add-gcloud \
-  --reservation-affinity=any 2>/dev/null
+gcloud compute instances create instance-1 --project=$PROJECT_ID --zone=$ZONE --machine-type=e2-medium --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default --metadata=enable-osconfig=TRUE,enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$PROJECT_NUMBER-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-12-bookworm-v20250311,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --labels=goog-ops-agent-policy=v2-x86-template-1-4-0,goog-ec-src=vm_add-gcloud --reservation-affinity=any && printf 'agentsRule:\n  packageState: installed\n  version: latest\ninstanceFilter:\n  inclusionLabels:\n  - labels:\n      goog-ops-agent-policy: v2-x86-template-1-4-0\n' > config.yaml && gcloud compute instances ops-agents policies create goog-ops-agent-v2-x86-template-1-4-0-$ZONE --project=$PROJECT_ID --zone=$ZONE --file=config.yaml && gcloud compute resource-policies create snapshot-schedule default-schedule-1 --project=$PROJECT_ID --region=$REGION --max-retention-days=14 --on-source-disk-delete=keep-auto-snapshots --daily-schedule --start-time=08:00 && gcloud compute disks add-resource-policies instance-1 --project=$PROJECT_ID --zone=$ZONE --resource-policies=projects/$PROJECT_ID/regions/$REGION/resourcePolicies/default-schedule-1
 
 # Describe VM
 echo
@@ -316,7 +224,7 @@ echo
 echo "${COLOR_BLUE}${BOLD}🎨 Deploying Colored Hello World Function...${COLOR_RESET}"
 echo
 
-mkdir -p ~/hello-world-colored && cd ~/hello-world-colored
+mkdir ~/hello-world-colored && cd $_
 touch requirements.txt
 
 cat > main.py <<EOF
@@ -344,24 +252,24 @@ echo
 echo "${COLOR_BLUE}${BOLD}🐢 Deploying Slow Go Function...${COLOR_RESET}"
 echo
 
-mkdir -p ~/min-instances && cd ~/min-instances
+mkdir ~/min-instances && cd $_
 touch main.go
 
 cat > main.go <<EOF
 package p
 
 import (
-	"fmt"
-	"net/http"
-	"time"
+        "fmt"
+        "net/http"
+        "time"
 )
 
 func init() {
-	time.Sleep(10 * time.Second)
+        time.Sleep(10 * time.Second)
 }
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Slow HTTP Go in GCF 2nd gen!")
+        fmt.Fprint(w, "Slow HTTP Go in GCF 2nd gen!")
 }
 EOF
 
@@ -396,21 +304,44 @@ gcloud run deploy slow-function \
 --min-instances=1 \
 --max-instances=4 \
 --region=$REGION \
---project=$PROJECT_ID \
---quiet
+--project=$PROJECT_ID
 
 # Test Again
 gcloud functions call slow-function --gen2 --region $REGION
 SLOW_URL=$(gcloud functions describe slow-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
 
-# Install 'hey' load testing tool if needed
-if ! command -v hey &> /dev/null; then
-  sudo apt-get install -y hey -qq &> /dev/null
-fi
-
 echo
 echo "${COLOR_BLUE}${BOLD}⚡ Load Testing Slow Function...${COLOR_RESET}"
 hey -n 10 -c 10 $SLOW_URL
+
+# Progress Check
+function check_progress {
+    while true; do
+        echo
+        echo "${COLOR_YELLOW}${BOLD}⚠️ PLEASE VERIFY YOUR PROGRESS UP TO TASK 6 ${COLOR_RESET}"
+        echo
+        read -p "${COLOR_BLUE}${BOLD}Have you completed Task 6? (Y/N): ${COLOR_RESET}" user_input
+        
+        case $user_input in
+            [Yy]*)
+                echo
+                echo "${COLOR_GREEN}${BOLD}✅ Proceeding to next steps...${COLOR_RESET}"
+                echo
+                break
+                ;;
+            [Nn]*)
+                echo
+                echo "${COLOR_RED}${BOLD}Please complete Task 6 first${COLOR_RESET}"
+                ;;
+            *)
+                echo
+                echo "Invalid input. Please enter Y or N."
+                ;;
+        esac
+    done
+}
+
+check_progress
 
 # Cleanup
 echo
@@ -420,8 +351,6 @@ gcloud run services delete slow-function --region $REGION --quiet
 # Deploy Concurrent Function
 echo
 echo "${COLOR_BLUE}${BOLD}🚀 Deploying Concurrent Function...${COLOR_RESET}"
-
-cd ~/min-instances
 
 deploy_with_retry slow-concurrent-function \
   --gen2 \
@@ -445,8 +374,7 @@ gcloud run deploy slow-concurrent-function \
 --set-env-vars=LOG_EXECUTION_ID=true \
 --region=$REGION \
 --project=$PROJECT_ID \
---quiet \
-&& gcloud run services update-traffic slow-concurrent-function --to-latest --region=$REGION --quiet
+&& gcloud run services update-traffic slow-concurrent-function --to-latest --region=$REGION
 
 # Final Test
 SLOW_CONCURRENT_URL=$(gcloud functions describe slow-concurrent-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
@@ -455,10 +383,10 @@ hey -n 10 -c 10 $SLOW_CONCURRENT_URL
 # Completion Message
 echo
 echo "${COLOR_GREEN}${BOLD}┌──────────────────────────────────────────────────────────────┐${COLOR_RESET}"
-echo "${COLOR_GREEN}${BOLD}│         LAB COMPLETED SUCCESSFULLY!                          │${COLOR_RESET}"
+echo "${COLOR_GREEN}${BOLD}│     LAB COMPLETED SUCCESSFULLY!                 │${COLOR_RESET}"
 echo "${COLOR_GREEN}${BOLD}└──────────────────────────────────────────────────────────────┘${COLOR_RESET}"
 echo
 echo "${COLOR_MAGENTA}${BOLD}For more cloud computing tutorials:${COLOR_RESET}"
-echo "${COLOR_CYAN}${BOLD}https://youtube.com/@dr.m.akshith${COLOR_RESET}"
-echo "${COLOR_MAGENTA}${BOLD}DR.M.AKSHITH - Cloud Solutions Expert${COLOR_RESET}"
+echo "${COLOR_CYAN}${BOLD}https://www.youtube.com/@drabhishek.5460/videos${COLOR_RESET}"
+echo "${COLOR_MAGENTA}${BOLD}Dr. Abhishek - Cloud Solutions Expert${COLOR_RESET}"
 echo
