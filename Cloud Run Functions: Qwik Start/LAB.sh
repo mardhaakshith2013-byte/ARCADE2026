@@ -37,13 +37,27 @@ echo -e "${BG_BLUE}${BOLD}======================================================
 echo -e "${BG_BLUE}${BOLD}       DR. M. AKSHITH CLOUD LABS - STARTING LAB        ${NC}"
 echo -e "${BG_BLUE}${BOLD}=======================================================${NC}\n"
 
-# 2. Get and Set Region Automatically
-LOCATION=$(gcloud config get-value compute/region 2>/dev/null)
-if [ -z "$LOCATION" ]; then
-  LOCATION="us-central1"
-  gcloud config set compute/region $LOCATION
-fi
-echo -e "${BLUE}Using Region: ${LOCATION}${NC}"
+# 2. Ask for Region and Zone (varies per lab session, so don't assume a default)
+while [[ ! "$REGION" =~ ^[a-z]+-[a-z]+[0-9]$ ]]; do
+  if [ -n "$REGION" ]; then
+    echo -e "${RED}'$REGION' isn't a valid region. Type ONLY the value, e.g. us-central1.${NC}"
+  fi
+  read -p "👉 Enter REGION for this lab (e.g. us-central1): " REGION
+done
+
+while [[ ! "$ZONE" =~ ^[a-z]+-[a-z]+[0-9]-[a-z]$ ]]; do
+  if [ -n "$ZONE" ]; then
+    echo -e "${RED}'$ZONE' isn't a valid zone. Type ONLY the value, e.g. us-central1-a.${NC}"
+  fi
+  read -p "👉 Enter ZONE for this lab (e.g. us-central1-a): " ZONE
+done
+
+export REGION
+export ZONE
+gcloud config set compute/region "$REGION" > /dev/null
+gcloud config set compute/zone "$ZONE" > /dev/null
+echo -e "${BLUE}Using Region: ${REGION}${NC}"
+echo -e "${BLUE}Using Zone: ${ZONE}${NC}"
 
 # 3. Enable Common GCP APIs (Add or remove APIs as needed)
 echo -e "${YELLOW}Enabling necessary GCP Services...${NC}"
